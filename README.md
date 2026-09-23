@@ -1,36 +1,34 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TCGSignals
 
-## Getting Started
+A trading-card catalog and price-exploration app for Pokémon and One Piece cards, built with Next.js, TypeScript, and Supabase.
 
-First, run the development server:
+> **Data notice:** The repository mixes imported card data with estimated prices and generated price histories. Some charts and percentage changes are simulations, not observed market history. Do not use them for trading or valuation decisions.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## Explore
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+- Browse cards and sets with search, filters, and pagination.
+- Inspect card details, displayed prices, and charts.
+- Keep a browser-local portfolio; positions are stored in `localStorage`, not synced to an account.
+- Query the read-only `/api/v1` endpoints; the in-app reference is at `/docs`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Data provenance
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Pokémon imports can use price fields supplied by the Pokémon TCG API.
+- The One Piece import and seed utilities can generate percentage changes or estimated prices.
+- `src/app/api/seed/prices/route.ts` estimates missing prices from rarity ranges and generates random changes.
+- `scripts/seed-price-history.ts` creates a simulated 90-day history. Its generated rows currently use the source label `tcgplayer`; that label does **not** prove those points were observed there.
 
-## Learn More
+The current UI and database do not consistently distinguish imported observations from estimates and simulations. Verify source, timestamp, and provenance before making any market claim.
 
-To learn more about Next.js, take a look at the following resources:
+## Run locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1. Install dependencies with `npm ci`.
+2. Set up a Supabase project and apply the SQL files in `supabase/migrations/` in order.
+3. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` locally. Administrative imports also require `SUPABASE_SERVICE_ROLE_KEY`, which must remain server-side and must never be committed.
+4. Run `npm run dev` and open `http://localhost:3000`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+`npm run lint` and `npm run build` are the available project checks. There is no automated test script yet.
 
-## Deploy on Vercel
+## Before relying on market data
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Separate observed, estimated, and simulated records in storage and the UI; correct synthetic source labels; document update cadence and attribution; and validate the deployed dataset. Until then, treat prices and charts as exploratory demo data.
